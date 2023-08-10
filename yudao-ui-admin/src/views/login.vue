@@ -52,11 +52,12 @@
                 </el-form-item>
                 <el-form-item prop="mobileCode">
                   <el-input v-model="loginForm.mobileCode" type="text" auto-complete="off" placeholder="短信验证码"
+                            class="sms-login-mobile-code-prefix"
                             @keyup.enter.native="handleLogin">
-                    <template v-slot="icon">
+                    <template>
                       <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon"/>
                     </template>
-                    <template v-slot="append">
+                    <template slot="append">
                       <span v-if="mobileCodeTimer <= 0" class="getMobileCode" @click="getSmsCode" style="cursor: pointer;">获取验证码</span>
                       <span v-if="mobileCodeTimer > 0" class="getMobileCode">{{ mobileCodeTimer }}秒后可重新获取</span>
                     </template>
@@ -81,6 +82,14 @@
                       <span>{{item.title}}</span>
                     </div>
                 </div>
+              </el-form-item>
+
+              <!-- 教程说明 -->
+              <el-form-item style="width:100%; margin-top:-25px">
+                <el-link href="https://doc.iocoder.cn/" target="_blank">📚开发指南</el-link>
+                <el-link href="https://doc.iocoder.cn/video/" target="_blank" style="padding-left: 10px">🔥视频教程</el-link>
+                <el-link href="https://www.iocoder.cn/Interview/good-collection/" target="_blank" style="padding-left: 10px">⚡面试手册</el-link>
+                <el-link href="http://static.yudao.iocoder.cn/mp/Aix9975.jpeg" target="_blank" style="padding-left: 10px">🤝外包咨询</el-link>
               </el-form-item>
             </el-form>
           </div>
@@ -334,5 +343,10 @@ export default {
 .oauth-login-item span:hover {
   text-decoration: underline red;
   color: red;
+}
+.sms-login-mobile-code-prefix {
+  :deep(.el-input__prefix) {
+    top: 22%;
+  }
 }
 </style>
