@@ -7,13 +7,9 @@ import cn.iocoder.yudao.module.product.controller.admin.comment.vo.ProductCommen
 import cn.iocoder.yudao.module.product.controller.admin.comment.vo.ProductCommentReplyReqVO;
 import cn.iocoder.yudao.module.product.controller.admin.comment.vo.ProductCommentUpdateVisibleReqVO;
 import cn.iocoder.yudao.module.product.controller.app.comment.vo.AppCommentPageReqVO;
-import cn.iocoder.yudao.module.product.controller.app.comment.vo.AppCommentStatisticsRespVO;
-import cn.iocoder.yudao.module.product.controller.app.comment.vo.AppProductCommentRespVO;
 import cn.iocoder.yudao.module.product.dal.dataobject.comment.ProductCommentDO;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
-import java.util.List;
 
 /**
  * 商品评论 Service 接口
@@ -23,38 +19,6 @@ import java.util.List;
 @Service
 @Validated
 public interface ProductCommentService {
-
-    /**
-     * 获得商品评价分页
-     *
-     * @param pageReqVO 分页查询
-     * @return 商品评价分页
-     */
-    PageResult<ProductCommentDO> getCommentPage(ProductCommentPageReqVO pageReqVO);
-
-    /**
-     * 修改评论是否可见
-     *
-     * @param updateReqVO 修改评论可见
-     */
-    void updateCommentVisible(ProductCommentUpdateVisibleReqVO updateReqVO);
-
-    /**
-     * 商家回复
-     *
-     * @param replyVO     商家回复
-     * @param loginUserId 管理后台商家登陆人 ID
-     */
-    void replyComment(ProductCommentReplyReqVO replyVO, Long loginUserId);
-
-    /**
-     * 获得商品评价分页
-     *
-     * @param pageVO  分页查询
-     * @param visible 是否可见
-     * @return 商品评价分页
-     */
-    PageResult<ProductCommentDO> getCommentPage(AppCommentPageReqVO pageVO, Boolean visible);
 
     /**
      * 创建商品评论
@@ -74,21 +38,35 @@ public interface ProductCommentService {
     Long createComment(ProductCommentCreateReqDTO createReqDTO);
 
     /**
-     * 获得商品的评价统计
+     * 修改评论是否可见
      *
-     * @param spuId   spu id
-     * @param visible 是否可见
-     * @return 评价统计
+     * @param updateReqVO 修改评论可见
      */
-    AppCommentStatisticsRespVO getCommentStatistics(Long spuId, Boolean visible);
+    void updateCommentVisible(ProductCommentUpdateVisibleReqVO updateReqVO);
 
     /**
-     * 得到评论列表
+     * 商家回复
      *
-     * @param spuId 商品 id
-     * @param count 数量
-     * @return {@link Object}
+     * @param replyVO     商家回复
+     * @param userId 管理后台商家登陆人 ID
      */
-    List<AppProductCommentRespVO> getCommentList(Long spuId, Integer count);
+    void replyComment(ProductCommentReplyReqVO replyVO, Long userId);
+
+    /**
+     * 【管理员】获得商品评价分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 商品评价分页
+     */
+    PageResult<ProductCommentDO> getCommentPage(ProductCommentPageReqVO pageReqVO);
+
+    /**
+     * 【会员】获得商品评价分页
+     *
+     * @param pageVO  分页查询
+     * @param visible 是否可见
+     * @return 商品评价分页
+     */
+    PageResult<ProductCommentDO> getCommentPage(AppCommentPageReqVO pageVO, Boolean visible);
 
 }

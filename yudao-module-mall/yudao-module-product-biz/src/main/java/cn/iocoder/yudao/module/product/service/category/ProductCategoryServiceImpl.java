@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.product.service.category;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
-import cn.iocoder.yudao.module.product.controller.admin.category.vo.ProductCategoryCreateReqVO;
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.product.controller.admin.category.vo.ProductCategoryListReqVO;
-import cn.iocoder.yudao.module.product.controller.admin.category.vo.ProductCategoryUpdateReqVO;
-import cn.iocoder.yudao.module.product.convert.category.ProductCategoryConvert;
+import cn.iocoder.yudao.module.product.controller.admin.category.vo.ProductCategorySaveReqVO;
 import cn.iocoder.yudao.module.product.dal.dataobject.category.ProductCategoryDO;
 import cn.iocoder.yudao.module.product.dal.mysql.category.ProductCategoryMapper;
 import cn.iocoder.yudao.module.product.service.spu.ProductSpuService;
@@ -13,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -36,26 +39,26 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     private ProductSpuService productSpuService;
 
     @Override
-    public Long createCategory(ProductCategoryCreateReqVO createReqVO) {
+    public Long createCategory(ProductCategorySaveReqVO createReqVO) {
         // 校验父分类存在
         validateParentProductCategory(createReqVO.getParentId());
 
         // 插入
-        ProductCategoryDO category = ProductCategoryConvert.INSTANCE.convert(createReqVO);
+        ProductCategoryDO category = BeanUtils.toBean(createReqVO, ProductCategoryDO.class);
         productCategoryMapper.insert(category);
         // 返回
         return category.getId();
     }
 
     @Override
-    public void updateCategory(ProductCategoryUpdateReqVO updateReqVO) {
+    public void updateCategory(ProductCategorySaveReqVO updateReqVO) {
         // 校验分类是否存在
         validateProductCategoryExists(updateReqVO.getId());
         // 校验父分类存在
         validateParentProductCategory(updateReqVO.getParentId());
 
         // 更新
-        ProductCategoryDO updateObj = ProductCategoryConvert.INSTANCE.convert(updateReqVO);
+        ProductCategoryDO updateObj = BeanUtils.toBean(updateReqVO, ProductCategoryDO.class);
         productCategoryMapper.updateById(updateObj);
     }
 
@@ -100,6 +103,26 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     }
 
     @Override
+    public void validateCategoryList(Collection<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        // 获得商品分类信息
+        List<ProductCategoryDO> list = productCategoryMapper.selectBatchIds(ids);
+        Map<Long, ProductCategoryDO> categoryMap = CollectionUtils.convertMap(list, ProductCategoryDO::getId);
+        // 校验
+        ids.forEach(id -> {
+            ProductCategoryDO category = categoryMap.get(id);
+            if (category == null) {
+                throw exception(CATEGORY_NOT_EXISTS);
+            }
+            if (!CommonStatusEnum.ENABLE.getStatus().equals(category.getStatus())) {
+                throw exception(CATEGORY_DISABLED, category.getName());
+            }
+        });
+    }
+
+    @Override
     public ProductCategoryDO getCategory(Long id) {
         return productCategoryMapper.selectById(id);
     }
@@ -137,13 +160,18 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     }
 
     @Override
-    public List<ProductCategoryDO> getEnableCategoryList(ProductCategoryListReqVO listReqVO) {
+    public List<ProductCategoryDO> getCategoryList(ProductCategoryListReqVO listReqVO) {
         return productCategoryMapper.selectList(listReqVO);
     }
 
     @Override
     public List<ProductCategoryDO> getEnableCategoryList() {
         return productCategoryMapper.selectListByStatus(CommonStatusEnum.ENABLE.getStatus());
+    }
+
+    @Override
+    public List<ProductCategoryDO> getEnableCategoryList(List<Long> ids) {
+        return productCategoryMapper.selectListByIdAndStatus(ids, CommonStatusEnum.ENABLE.getStatus());
     }
 
 }

@@ -27,7 +27,7 @@ public class ServletUtils {
      * 返回 JSON 字符串
      *
      * @param response 响应
-     * @param object 对象，会序列化成 JSON 字符串
+     * @param object   对象，会序列化成 JSON 字符串
      */
     @SuppressWarnings("deprecation") // 必须使用 APPLICATION_JSON_UTF8_VALUE，否则会乱码
     public static void writeJSON(HttpServletResponse response, Object object) {
@@ -40,7 +40,7 @@ public class ServletUtils {
      *
      * @param response 响应
      * @param filename 文件名
-     * @param content 附件内容
+     * @param content  附件内容
      */
     public static void writeAttachment(HttpServletResponse response, String filename, byte[] content) throws IOException {
         // 设置 header 和 contentType
@@ -93,11 +93,19 @@ public class ServletUtils {
     }
 
     public static String getBody(HttpServletRequest request) {
-        return ServletUtil.getBody(request);
+        // 只有在 json 请求在读取，因为只有 CacheRequestBodyFilter 才会进行缓存，支持重复读取
+        if (isJsonRequest(request)) {
+            return ServletUtil.getBody(request);
+        }
+        return null;
     }
 
     public static byte[] getBodyBytes(HttpServletRequest request) {
-        return ServletUtil.getBodyBytes(request);
+        // 只有在 json 请求在读取，因为只有 CacheRequestBodyFilter 才会进行缓存，支持重复读取
+        if (isJsonRequest(request)) {
+            return ServletUtil.getBodyBytes(request);
+        }
+        return null;
     }
 
     public static String getClientIP(HttpServletRequest request) {
@@ -107,4 +115,5 @@ public class ServletUtils {
     public static Map<String, String> getParamMap(HttpServletRequest request) {
         return ServletUtil.getParamMap(request);
     }
+
 }

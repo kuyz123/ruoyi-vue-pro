@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Schema(description = "用户 App - 订单交易的明细 Response VO")
@@ -20,8 +19,11 @@ public class AppTradeOrderDetailRespVO {
     @Schema(description = "订单流水号", requiredMode = Schema.RequiredMode.REQUIRED, example = "1146347329394184195")
     private String no;
 
+    @Schema(description = "订单类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "0")
+    private Integer type;
+
     @Schema(description = "下单时间", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @Schema(description = "用户备注", requiredMode = Schema.RequiredMode.REQUIRED, example = "你猜")
     private String userRemark;
@@ -80,6 +82,12 @@ public class AppTradeOrderDetailRespVO {
     @Schema(description = "配送方式", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     private Integer deliveryType;
 
+    @Schema(description = "发货物流公司编号", example = "10")
+    private Long logisticsId;
+
+    @Schema(description = "发货物流名称", example = "顺丰快递")
+    private String logisticsName;
+
     @Schema(description = "发货物流单号", example = "1024")
     private String logisticsNo;
 
@@ -107,7 +115,16 @@ public class AppTradeOrderDetailRespVO {
     @Schema(description = "自提门店编号", example = "1088")
     private Long pickUpStoreId;
 
+    @Schema(description = "自提核销码", example = "40964096")
+    private String pickUpVerifyCode;
+
     // ========== 售后基本信息 ==========
+
+    @Schema(description = "售后状态", example = "0")
+    private Integer refundStatus;
+
+    @Schema(description = "退款金额，单位：分", example = "100")
+    private Integer refundPrice;
 
     // ========== 营销基本信息 ==========
 
@@ -119,6 +136,12 @@ public class AppTradeOrderDetailRespVO {
 
     @Schema(description = "积分抵扣的金额", requiredMode = Schema.RequiredMode.REQUIRED, example = "100")
     private Integer pointPrice;
+
+    @Schema(description = "VIP 减免金额", requiredMode = Schema.RequiredMode.REQUIRED, example = "888")
+    private Integer vipPrice;
+
+    @Schema(description = "拼团记录编号", example = "100")
+    private Long combinationRecordId;
 
     /**
      * 订单项数组

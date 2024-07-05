@@ -1,11 +1,11 @@
 package cn.iocoder.yudao.module.trade.controller.admin.delivery;
 
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
 import cn.iocoder.yudao.module.trade.controller.admin.delivery.vo.express.*;
-import cn.iocoder.yudao.module.trade.controller.admin.delivery.vo.express.DeliveryExpressUpdateReqVO;
 import cn.iocoder.yudao.module.trade.convert.delivery.DeliveryExpressConvert;
 import cn.iocoder.yudao.module.trade.dal.dataobject.delivery.DeliveryExpressDO;
 import cn.iocoder.yudao.module.trade.service.delivery.DeliveryExpressService;
@@ -22,8 +22,8 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.EXPORT;
 
 @Tag(name = "管理后台 - 快递公司")
 @RestController
@@ -67,6 +67,13 @@ public class DeliveryExpressController {
         return success(DeliveryExpressConvert.INSTANCE.convert(deliveryExpress));
     }
 
+    @GetMapping("/list-all-simple")
+    @Operation(summary = "获取快递公司精简信息列表", description = "主要用于前端的下拉选项")
+    public CommonResult<List<DeliveryExpressSimpleRespVO>> getSimpleDeliveryExpressList() {
+        List<DeliveryExpressDO> list = deliveryExpressService.getDeliveryExpressListByStatus(CommonStatusEnum.ENABLE.getStatus());
+        return success(DeliveryExpressConvert.INSTANCE.convertList1(list));
+    }
+
     @GetMapping("/page")
     @Operation(summary = "获得快递公司分页")
     @PreAuthorize("@ss.hasPermission('trade:delivery:express:query')")
@@ -78,7 +85,7 @@ public class DeliveryExpressController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出快递公司 Excel")
     @PreAuthorize("@ss.hasPermission('trade:delivery:express:export')")
-    @OperateLog(type = EXPORT)
+    @ApiAccessLog(operateType = EXPORT)
     public void exportDeliveryExpressExcel(@Valid DeliveryExpressExportReqVO exportReqVO,
               HttpServletResponse response) throws IOException {
         List<DeliveryExpressDO> list = deliveryExpressService.getDeliveryExpressList(exportReqVO);

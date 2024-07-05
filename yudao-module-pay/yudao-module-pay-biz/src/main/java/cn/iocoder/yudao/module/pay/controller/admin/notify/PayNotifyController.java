@@ -3,9 +3,7 @@ package cn.iocoder.yudao.module.pay.controller.admin.notify;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
 import cn.iocoder.yudao.framework.pay.core.client.PayClient;
-import cn.iocoder.yudao.framework.pay.core.client.PayClientFactory;
 import cn.iocoder.yudao.framework.pay.core.client.dto.order.PayOrderRespDTO;
 import cn.iocoder.yudao.framework.pay.core.client.dto.refund.PayRefundRespDTO;
 import cn.iocoder.yudao.module.pay.controller.admin.notify.vo.PayNotifyTaskDetailRespVO;
@@ -16,6 +14,7 @@ import cn.iocoder.yudao.module.pay.dal.dataobject.app.PayAppDO;
 import cn.iocoder.yudao.module.pay.dal.dataobject.notify.PayNotifyLogDO;
 import cn.iocoder.yudao.module.pay.dal.dataobject.notify.PayNotifyTaskDO;
 import cn.iocoder.yudao.module.pay.service.app.PayAppService;
+import cn.iocoder.yudao.module.pay.service.channel.PayChannelService;
 import cn.iocoder.yudao.module.pay.service.notify.PayNotifyService;
 import cn.iocoder.yudao.module.pay.service.order.PayOrderService;
 import cn.iocoder.yudao.module.pay.service.refund.PayRefundService;
@@ -53,20 +52,18 @@ public class PayNotifyController {
     private PayNotifyService notifyService;
     @Resource
     private PayAppService appService;
-
     @Resource
-    private PayClientFactory payClientFactory;
+    private PayChannelService channelService;
 
     @PostMapping(value = "/order/{channelId}")
     @Operation(summary = "支付渠道的统一【支付】回调")
     @PermitAll
-    @OperateLog(enable = false) // 回调地址，无需记录操作日志
     public String notifyOrder(@PathVariable("channelId") Long channelId,
                               @RequestParam(required = false) Map<String, String> params,
                               @RequestBody(required = false) String body) {
         log.info("[notifyOrder][channelId({}) 回调数据({}/{})]", channelId, params, body);
         // 1. 校验支付渠道是否存在
-        PayClient payClient = payClientFactory.getPayClient(channelId);
+        PayClient payClient = channelService.getPayClient(channelId);
         if (payClient == null) {
             log.error("[notifyCallback][渠道编号({}) 找不到对应的支付客户端]", channelId);
             throw exception(CHANNEL_NOT_FOUND);
@@ -81,13 +78,12 @@ public class PayNotifyController {
     @PostMapping(value = "/refund/{channelId}")
     @Operation(summary = "支付渠道的统一【退款】回调")
     @PermitAll
-    @OperateLog(enable = false) // 回调地址，无需记录操作日志
     public String notifyRefund(@PathVariable("channelId") Long channelId,
                               @RequestParam(required = false) Map<String, String> params,
                               @RequestBody(required = false) String body) {
         log.info("[notifyRefund][channelId({}) 回调数据({}/{})]", channelId, params, body);
         // 1. 校验支付渠道是否存在
-        PayClient payClient = payClientFactory.getPayClient(channelId);
+        PayClient payClient = channelService.getPayClient(channelId);
         if (payClient == null) {
             log.error("[notifyCallback][渠道编号({}) 找不到对应的支付客户端]", channelId);
             throw exception(CHANNEL_NOT_FOUND);

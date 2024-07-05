@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.promotion.controller.admin.reward.vo;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.validation.InEnum;
 import cn.iocoder.yudao.module.promotion.enums.common.PromotionConditionTypeEnum;
+import cn.iocoder.yudao.module.promotion.enums.common.PromotionProductScopeEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -50,7 +51,7 @@ public class RewardActivityBaseVO {
 
     @Schema(description = "商品范围", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotNull(message = "商品范围不能为空")
-    @InEnum(value = PromotionConditionTypeEnum.class, message = "商品范围必须是 {value}")
+    @InEnum(value = PromotionProductScopeEnum.class, message = "商品范围必须是 {value}")
     private Integer productScope;
 
     @Schema(description = "商品 SPU 编号的数组", example = "1,2,3")
@@ -84,7 +85,7 @@ public class RewardActivityBaseVO {
         @Schema(description = "赠送的优惠劵编号的数组", example = "1,2,3")
         private List<Long> couponIds;
 
-        @Schema(description = "赠送的优惠卷数量的数组", example = "1,2,3")
+        @Schema(description = "赠送的优惠券数量的数组", example = "1,2,3")
         private List<Integer> couponCounts;
 
         @AssertTrue(message = "优惠劵和数量必须一一对应")

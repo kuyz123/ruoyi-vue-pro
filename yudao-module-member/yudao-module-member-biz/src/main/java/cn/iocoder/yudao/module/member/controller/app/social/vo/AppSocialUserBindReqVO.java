@@ -13,12 +13,9 @@ import javax.validation.constraints.NotNull;
 
 @Schema(description = "用户 APP - 社交绑定 Request VO，使用 code 授权码")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class AppSocialUserBindReqVO {
 
-    @Schema(description = "社交平台的类型，参见 SysUserSocialTypeEnum 枚举值", requiredMode = Schema.RequiredMode.REQUIRED, example = "10")
+    @Schema(description = "社交平台的类型，参见 SocialTypeEnum 枚举值", requiredMode = Schema.RequiredMode.REQUIRED, example = "10")
     @InEnum(SocialTypeEnum.class)
     @NotNull(message = "社交平台的类型不能为空")
     private Integer type;
